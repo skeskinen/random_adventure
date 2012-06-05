@@ -2,23 +2,33 @@ require 'hump.vector'
 
 require 'obj_tree'
 require 'object'
+require 'events'
+require 'event_handler'
 
 WORLD_SIZE = 2^20
+game_time = 0
 
 function love.load()
     math.randomseed(os.time())
     g = {}
     g.obj_tree = Obj_tree.new{root = 1}
+    g.events = Events.new()
     for i=1,40 do
         g.obj_tree:insert(Object.new{pos=vector(0,0),w=40,h=40})
     end
     for i=1,30 do
         g.obj_tree:remove{id = i, pos=vector(0,0),w=40,h=40}
     end
+    g.events:add_event({type='function', f=function() print('mui') end}, 3)
 end
 
 function love.draw()
 
+end
+
+function love.update(dt)
+    game_time = game_time + dt
+    g.events:run_events()
 end
 
 function love.keypressed(key)
