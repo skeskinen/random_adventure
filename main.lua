@@ -4,6 +4,8 @@ require 'obj_tree'
 require 'object'
 require 'events'
 require 'event_handler'
+require 'world_graph'
+require 'direction'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -13,6 +15,7 @@ function love.load()
     g = {}
     g.obj_tree = Obj_tree.new{root = 1}
     g.events = Events.new()
+    g.world_graph = World_graph.new()
     for i=1,40 do
         g.obj_tree:insert(Object.new{pos=vector(0,0),w=40,h=40})
     end
