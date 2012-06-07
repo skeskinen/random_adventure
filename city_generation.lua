@@ -15,6 +15,7 @@ function apply_road(road, cur_node)
     end
 
     for _,v in ipairs(road.objects) do
-        --create objects
+        v.img = get_image_raw(v.name .. '.png') 
+       g.events:add_event{urg = true, type = EV_NEW_OBJECT, o = Object.new(v)} 
     end 
 end

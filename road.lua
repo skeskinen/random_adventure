@@ -25,6 +25,7 @@ function Road.new(name, dir, pos)
         v.pos = v.pos + pos
         v.pos.x = round(v.pos.x)
         v.pos.y = round(v.pos.y)
+        v.pos = v.pos - vector(v.w/2, v.h/2)
     end
     o.importance = base.importance
     
@@ -73,9 +74,9 @@ roads{
     name = 'basic',
     dir = DIR_UP,
     expansion_points = {
-        {true, 0, -160, {DIR_DOWN,DIR_UP, DIR_LEFT, DIR_RIGHT}}, {false, -32, -160, {DIR_RIGHT,DIR_LEFT}}, {false, 32, -160, {DIR_LEFT,DIR_RIGHT}}, 
+        {true, 0, -96, {DIR_DOWN,DIR_UP, DIR_LEFT, DIR_RIGHT}}, {false, -32, -96, {DIR_RIGHT,DIR_LEFT}}, {false, 32, -96, {DIR_LEFT,DIR_RIGHT}}, 
         {true, 0, -192, {DIR_DOWN,DIR_UP}}
     },
-    objects = {{'straight',-32, -64, 64, 64},{'crossroads', -32, -128, 64, 64}, {'straight', -32, -192, 64, 64}},
+    objects = {{'straight',0, -32, 64, 64},{'crossroad', 0, -96, 64, 64}, {'straight', 0, -160, 64, 64}},
     importance = 2
 }

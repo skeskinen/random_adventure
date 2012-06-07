@@ -10,6 +10,7 @@ require 'road'
 require 'city_generation'
 require 'images'
 require 'render'
+require 'npc'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -28,24 +29,10 @@ function love.load()
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
-    --[[
-    for i=1,40 do
-        g.obj_tree:insert(Object.new{pos=vector(0,0),w=40,h=40})
-    end
-    for i=1,30 do
-        g.obj_tree:remove{id = i, pos=vector(0,0),w=40,h=40}
-    end
-    --]]
-   
-    for i=1,5 do
+    for i=1,7 do
         new_random_road()
     end
-    --[[
-    for i,v in ipairs(g.world_graph.expansions) do
-        print(i, v.dir:text(), v.a.pos)
-    end
-    --]]
-    --
+    
     love.graphics.setBackgroundColor(50,200,50)
     
 end
