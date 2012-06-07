@@ -14,6 +14,8 @@ game_time = 0
 
 function love.load()
     math.randomseed(os.time())
+    math.random()
+
     g = {}
     g.obj_tree = Obj_tree.new{root = 1}
     g.events = Events.new()
@@ -24,15 +26,16 @@ function love.load()
     for i=1,30 do
         g.obj_tree:remove{id = i, pos=vector(0,0),w=40,h=40}
     end
-    g.events:add_event({type='function', f=function() print('mui') end}, 3)
-    new_random_road()
-    new_random_road()
-    new_random_road()
-    new_random_road()
-
+   
+    for i=1,5 do
+        new_random_road()
+    end
+    --[[
     for i,v in ipairs(g.world_graph.expansions) do
         print(i, v.dir:text(), v.a.pos)
     end
+    --]]
+    
 end
 
 function love.draw()
@@ -78,5 +81,9 @@ function deepcopy(object)
         return setmetatable(new_table, getmetatable(object))
     end
     return _copy(object)
+end
+
+function round(num)
+    return math.floor(num+0.5)
 end
 

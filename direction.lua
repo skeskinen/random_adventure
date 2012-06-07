@@ -26,7 +26,7 @@ Direction.vectors = {
 }
 
 function Direction.new(dir)
-    o = {}
+    local o = {}
     setmetatable(o, Direction)
     if type(dir) == 'string' then
         for i,v in ipairs(Direction.TEXT) do
@@ -50,7 +50,7 @@ end
 
 
 function Direction:rad()
-    return (self.r-1) * math.pi/2
+    return (self.r-1) * math.pi/4
 end
 
 function Direction:deg()
@@ -59,6 +59,10 @@ end
 
 function Direction:text()
     return self.TEXT[self.r]
+end
+
+function Direction:__tostring()
+    return self:text()
 end
 
 function Direction:opposite()
@@ -78,7 +82,7 @@ function Direction:rotate(rot)
 end
 
 function Direction.__add(a,b)
-    return Direction.new(a.r+b.r)
+    return Direction.new(a.r+b.r-1)
 end
 
 function Direction:clone()

@@ -2,22 +2,32 @@ Road = {}
 Road.__index = Road
 
 function Road.new(name, dir, pos)
-    o = {}
+    local o = {}
     setmetatable(o, Road)
 
     local base = Roads[name]
 
     o.name = base.name
-    o.dir = base.dir:clone()
+    o.dir = dir:clone()
     o.expansion_points = deepcopy(base.expansion_points)
     for _,v in ipairs(o.expansion_points) do
+        v.pos:rotate_inplace(dir:rad())
         v.pos = v.pos + pos
+        for _,w in ipairs(v.dirs) do
+            w:rotate(dir.r-1)
+        end
+        v.pos.x = round(v.pos.x)
+        v.pos.y = round(v.pos.y)
     end
     o.objects = deepcopy(base.objects)
     for _,v in ipairs(o.objects) do
+        v.pos:rotate_inplace(dir:rad())
         v.pos = v.pos + pos
+        v.pos.x = round(v.pos.x)
+        v.pos.y = round(v.pos.y)
     end
     o.importance = base.importance
+    
     return o
 end
 

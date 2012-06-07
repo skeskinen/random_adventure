@@ -1,13 +1,7 @@
 function new_random_road()
---    local expansion_i = math.random(#g.world_graph.expansions)
-    local expansion_i
-    for i,v in ipairs(g.world_graph.expansions) do
-        if v.dir == Direction.new('up') then
-            expansion_i = i
-        end
-    end
+    local expansion_i = math.random(#g.world_graph.expansions)
     local expansion = g.world_graph.expansions[expansion_i]
-    local road = Road.new('basic', Direction.new(Direction.UP), expansion.a.pos)
+    local road = Road.new('basic', expansion.dir, expansion.a.pos)
     apply_road(road, expansion.a) 
 end
 
