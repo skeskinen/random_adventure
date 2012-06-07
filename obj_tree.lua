@@ -27,7 +27,7 @@ function Obj_tree:query(o, f)
             end
         else
             for _,v in pairs(self.bucket) do
-                if f(v) then
+                if overlap(o, v) and f(v) then
                     return true
                 end
             end
@@ -74,7 +74,7 @@ function Obj_tree:divide()
         self.children = {}
         for i=1,4 do
             self.children[i] = Obj_tree.new{s = self.s/2, w = self.s/2, h = self.s/2,  
-            pos = self.pos + self.s * vector(CHILD_COORDINATES[i][1], CHILD_COORDINATES[i][2])}
+                pos = self.pos + self.s * vector(CHILD_COORDINATES[i][1], CHILD_COORDINATES[i][2])}
         end
         self.bucket_s = 0
         for _,v in pairs(self.bucket) do

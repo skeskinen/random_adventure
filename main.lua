@@ -8,6 +8,8 @@ require 'world_graph'
 require 'direction'
 require 'road'
 require 'city_generation'
+require 'images'
+require 'render'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -19,15 +21,21 @@ function love.load()
     g = {}
     g.obj_tree = Obj_tree.new{root = 1}
     g.events = Events.new()
+
     g.world_graph = World_graph.new()
     --g.npc_table = Npc_table.new()
-    
+
+    g.player = new_player()
+    g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
+
+    --[[
     for i=1,40 do
         g.obj_tree:insert(Object.new{pos=vector(0,0),w=40,h=40})
     end
     for i=1,30 do
         g.obj_tree:remove{id = i, pos=vector(0,0),w=40,h=40}
     end
+    --]]
    
     for i=1,5 do
         new_random_road()
@@ -37,26 +45,50 @@ function love.load()
         print(i, v.dir:text(), v.a.pos)
     end
     --]]
+    --
+    love.graphics.setBackgroundColor(50,200,50)
     
 end
 
 function love.draw()
-
+    render()
 end
 
 function love.update(dt)
     game_time = game_time + dt
+
+    g.events:add_event{f = Object.update, o = g.player, urg = true, type = EV_METHOD}
     g.events:run_events()
 end
+
+local speed = 400
 
 function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
+    else
+        if key == 'up' then
+            g.player.vel = g.player.vel + vector(0, -speed)
+        elseif key == 'down' then
+            g.player.vel = g.player.vel + vector(0, speed)
+        elseif key == 'left' then
+            g.player.vel = g.player.vel + vector(-speed, 0)
+        elseif key == 'right' then
+            g.player.vel = g.player.vel + vector(speed, 0)
+        end
     end
 end
 
 function love.keyreleased(key)
-
+    if key == 'up' then
+        g.player.vel = g.player.vel + vector(0, speed)
+    elseif key == 'down' then
+        g.player.vel = g.player.vel + vector(0, -speed)
+    elseif key == 'left' then
+        g.player.vel = g.player.vel + vector(speed, 0)
+    elseif key == 'right' then
+        g.player.vel = g.player.vel + vector(-speed, 0)
+    end
 end
 
 function love.mousepressed(x, y, mouse)
