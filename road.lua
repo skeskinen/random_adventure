@@ -13,8 +13,8 @@ function Road.new(name, dir, pos)
     for _,v in ipairs(o.expansion_points) do
         v.pos:rotate_inplace(dir:rad())
         v.pos = v.pos + pos
-        for _,w in ipairs(v.dirs) do
-            w:rotate(dir.r-1)
+        for i,w in ipairs(v.dirs) do
+            v.dirs[i] = w + dir
         end
         v.pos.x = round(v.pos.x)
         v.pos.y = round(v.pos.y)
@@ -61,19 +61,21 @@ end
 
 function parse_objects(t_target, t_arg)
     for i,v in ipairs(t_arg) do
-        t_target = {}
-        t_target.name = 'road_piece_' .. v[1]
-        t_target.pos = vector(v[2], v[3])
+        t_target[i] = {}
+        t_target[i].name = 'road_piece_' .. v[1]
+        t_target[i].pos = vector(v[2], v[3])
+        t_target[i].w = v[4]
+        t_target[i].h = v[5]
     end
 end
 
 roads{
     name = 'basic',
-    dir = 'up',
+    dir = DIR_UP,
     expansion_points = {
-        {true, 0, -160, {'down','up', 'left', 'right'}}, {false, -32, -160, {'right','left'}}, {false, 32, -160, {'left','right'}}, 
-        {true, 0, -192, {'down','up'}}
+        {true, 0, -160, {DIR_DOWN,DIR_UP, DIR_LEFT, DIR_RIGHT}}, {false, -32, -160, {DIR_RIGHT,DIR_LEFT}}, {false, 32, -160, {DIR_LEFT,DIR_RIGHT}}, 
+        {true, 0, -192, {DIR_DOWN,DIR_UP}}
     },
-    objects = {{'straight',-32, -64},{'crossroads', -32, -128}, {'straight', -32, -192}},
+    objects = {{'straight',-32, -64, 64, 64},{'crossroads', -32, -128, 64, 64}, {'straight', -32, -192, 64, 64}},
     importance = 2
 }

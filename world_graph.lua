@@ -5,9 +5,10 @@ function World_graph.new(o)
     o = o or {}
     setmetatable(o, World_graph)
     o.nodes = {}
+    o.places = {}
     o.expansions = {}
 
-    o:new_node{pos = vector(0,0), dirs = {Direction.new(Direction.UP), Direction.new(Direction.DOWN)}}
+    o:new_node{pos = vector(0,0), dirs = {Direction.new(DIR_UP), Direction.new(DIR_DOWN)}}
     return o
 end
 
@@ -18,9 +19,15 @@ function World_graph:new_node(o)
     if not self.nodes[o.pos.x][o.pos.y] then
         self.nodes[o.pos.x][o.pos.y] = World_node.new(o)
         local node = self.nodes[o.pos.x][o.pos.y]
-        self:new_edges(node, unpack(o.dirs))
+        if o.place_name then
+            self.places[o.place_name] = o.pos
+        end
+        self:new_edges(node, o.dirs)
     else
         local node = self.nodes[o.pos.x][o.pos.y]
+        if o.place_name then
+            self.places[o.place_name] = o.pos
+        end
         local ok = #node.edges == #o.dirs
         for _,v in ipairs(node.edges) do
             for i,w in ipairs(o.dirs) do
@@ -37,8 +44,8 @@ function World_graph:new_node(o)
     return self.nodes[o.pos.x][o.pos.y]
 end
 
-function World_graph:new_edges(node, ...)
-    for i,v in ipairs(arg) do
+function World_graph:new_edges(node, dirs)
+    for i,v in ipairs(dirs) do
         local new_edge = World_edge.new(node, v)
         node.edges[#node.edges+1] = new_edge
         self.expansions[#self.expansions+1] = new_edge

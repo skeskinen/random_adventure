@@ -20,6 +20,8 @@ function love.load()
     g.obj_tree = Obj_tree.new{root = 1}
     g.events = Events.new()
     g.world_graph = World_graph.new()
+    --g.npc_table = Npc_table.new()
+    
     for i=1,40 do
         g.obj_tree:insert(Object.new{pos=vector(0,0),w=40,h=40})
     end

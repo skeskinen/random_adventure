@@ -1,14 +1,15 @@
 Direction = {}
 Direction.__index = Direction
+Rotation = Direction
 
-Direction.UP = 1
-Direction.UP_RIGHT = 2
-Direction.RIGHT = 3
-Direction.DOWN_RIGHT = 4
-Direction.DOWN = 5
-Direction.DOWN_LEFT = 6
-Direction.LEFT = 7
-Direction.UP_LEFT = 8
+DIR_UP = 1
+DIR_UP_RIGHT = 2
+DIR_RIGHT = 3
+DIR_DOWN_RIGHT = 4
+DIR_DOWN = 5
+DIR_DOWN_LEFT = 6
+DIR_LEFT = 7
+DIR_UP_LEFT = 8
 
 Direction.TEXT = {
     'up', 'up_right', 'right', 'down_right', 'down', 'down_left', 'left', 'up_left'
@@ -28,15 +29,6 @@ Direction.vectors = {
 function Direction.new(dir)
     local o = {}
     setmetatable(o, Direction)
-    if type(dir) == 'string' then
-        for i,v in ipairs(Direction.TEXT) do
-            if dir == v then
-                dir = i
-                break
-            end
-        end
-        assert(type(dir) ~= 'string') 
-    end
     if type(dir) == 'table' then
         o.r = dir.r
     else

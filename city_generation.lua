@@ -13,4 +13,8 @@ function apply_road(road, cur_node)
             cur_node = new_node
         end
     end
+
+    for _,v in ipairs(road.objects) do
+        --create objects
+    end 
 end
