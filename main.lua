@@ -6,6 +6,8 @@ require 'events'
 require 'event_handler'
 require 'world_graph'
 require 'direction'
+require 'road'
+require 'city_generation'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -23,6 +25,14 @@ function love.load()
         g.obj_tree:remove{id = i, pos=vector(0,0),w=40,h=40}
     end
     g.events:add_event({type='function', f=function() print('mui') end}, 3)
+    new_random_road()
+    new_random_road()
+    new_random_road()
+    new_random_road()
+
+    for i,v in ipairs(g.world_graph.expansions) do
+        print(i, v.dir:text(), v.a.pos)
+    end
 end
 
 function love.draw()
@@ -52,15 +62,21 @@ function overlap(a, b)
     return a.pos.x < b.pos.x + b.w and b.pos.x < a.pos.x + a.w and a.pos.y < b.pos.y + b.h and b.pos.y < a.pos.y + a.h
 end
 
-function move_object(o, v)
-    g.obj_tree:remove(o)
-    local old_pos = o.pos
-    o.pos = v
-    if o.collision then
-        if collision(o) then
-            o.pos = old_pos
+function deepcopy(object)
+    local lookup_table = {}
+    local function _copy(object)
+        if type(object) ~= "table" then
+            return object
+        elseif lookup_table[object] then
+            return lookup_table[object]
         end
+        local new_table = {}
+        lookup_table[object] = new_table
+        for index, value in pairs(object) do
+            new_table[_copy(index)] = _copy(value)
+        end
+        return setmetatable(new_table, getmetatable(object))
     end
-    g.obj_tree:insert(o)
+    return _copy(object)
 end
 
