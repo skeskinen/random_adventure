@@ -35,6 +35,7 @@ function love.load()
     
     love.graphics.setBackgroundColor(50,200,50)
     
+    init_render()
 end
 
 function love.draw()

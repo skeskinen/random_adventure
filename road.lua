@@ -26,6 +26,7 @@ function Road.new(name, dir, pos)
         v.pos.x = round(v.pos.x)
         v.pos.y = round(v.pos.y)
         v.pos = v.pos - vector(v.w/2, v.h/2)
+        v.rot = dir:clone()
     end
     o.importance = base.importance
     
