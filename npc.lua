@@ -36,12 +36,12 @@ function Npc:wakeup()
     self.object.vel = (self.target - self.location):normalized() * self.travel_speed
     self.travel_end = game_time + travel_time
     g.events:add_event({f = Npc.wakeup, o = self, type = EV_METHOD, urg = false}, travel_time)
-
 end
 
 function Npc:object_update()
     if self.object then
         self.object:update()
-        g.events:add_event({type = EV_METHOD, o = self, f = Npc.object_update, urg = false}, 0.01)
+        g.events:add_event{type = EV_METHOD, o = self, f = Npc.object_update, urg = false}
     end
 end
+
