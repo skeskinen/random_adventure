@@ -7,8 +7,8 @@ function Object.new(o)
     o = o or {}
     setmetatable(o, Object)
     o.id = id_counter
-    o.w = 0
-    o.h = 0
+    o.w = o.w or 0
+    o.h = o.h or 0
     id_counter = id_counter + 1
     return o
 end
@@ -37,5 +37,6 @@ function new_player()
     o.img = get_image_raw("player.png")
     o.w = o.img:getWidth()
     o.h = o.img:getHeight()
+    o.draw_pr = 5
     return o
 end

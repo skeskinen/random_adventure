@@ -1,0 +1,13 @@
+extern number t;
+vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords )
+{
+    texture_coords -= vec2(0.5, 0.5);
+    texture_coords *= 2;
+    number angl = atan(texture_coords.y, texture_coords.x);
+
+//    texture_coords /= (1+min(t,0));
+
+    texture_coords /= 2;
+    texture_coords += vec2(0.5, 0.5);
+    return Texel(texture, texture_coords);
+}

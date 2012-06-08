@@ -36,6 +36,8 @@ function love.load()
     love.graphics.setBackgroundColor(50,200,50)
 
     npc = Npc.new()
+    
+    init_render()
 end
 
 function love.draw()
@@ -44,6 +46,7 @@ end
 
 function love.update(dt)
     game_time = game_time + dt
+    check_keys()
 
     g.events:add_event{f = Object.update, o = g.player, urg = true, type = EV_METHOD}
     g.events:run_events()
@@ -54,28 +57,31 @@ local speed = 400
 function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
-    else
-        if key == 'up' then
-            g.player.vel = g.player.vel + vector(0, -speed)
-        elseif key == 'down' then
-            g.player.vel = g.player.vel + vector(0, speed)
-        elseif key == 'left' then
-            g.player.vel = g.player.vel + vector(-speed, 0)
-        elseif key == 'right' then
-            g.player.vel = g.player.vel + vector(speed, 0)
-        end
     end
 end
 
 function love.keyreleased(key)
-    if key == 'up' then
-        g.player.vel = g.player.vel + vector(0, speed)
-    elseif key == 'down' then
-        g.player.vel = g.player.vel + vector(0, -speed)
-    elseif key == 'left' then
-        g.player.vel = g.player.vel + vector(speed, 0)
-    elseif key == 'right' then
-        g.player.vel = g.player.vel + vector(-speed, 0)
+end
+
+function check_keys()
+    local vel = vector()
+    if love.keyboard.isDown("up") then
+        vel = vel + vector(0, -1)
+    end
+    if love.keyboard.isDown("down") then
+        vel = vel + vector(0, 1)
+    end
+    if love.keyboard.isDown("left") then
+        vel = vel + vector(-1, 0)
+    end
+    if love.keyboard.isDown("right") then
+        vel = vel + vector(1, 0)
+    end
+
+    g.player.vel = vel
+    if vel.x ~= 0 or vel.y ~= 0 then
+        g.player.vel:normalize_inplace()
+        g.player.vel = speed * g.player.vel
     end
 end
 
