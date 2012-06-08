@@ -24,7 +24,7 @@ function love.load()
     g.events = Events.new()
 
     g.world_graph = World_graph.new()
-    --g.npc_table = Npc_table.new()
+    g.npc_table = Npc_table.new()
 
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
@@ -34,7 +34,8 @@ function love.load()
     end
     
     love.graphics.setBackgroundColor(50,200,50)
-    
+
+    npc = Npc.new()
 end
 
 function love.draw()

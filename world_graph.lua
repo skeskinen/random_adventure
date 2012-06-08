@@ -75,6 +75,20 @@ function World_graph:expand(i, o)
     return node
 end
 
+function World_graph:random_adjecent(vec)
+    local current_node = self.nodes[vec.x][vec.y]
+    local next_node = nil
+    while not next_node do
+        local edge = current_node.edges[math.random(#current_node.edges)]
+        if edge.a ~= current_node then
+            return edge.a.pos
+        end
+        if edge.b and edge.b ~= current_node then
+            return edge.b.pos
+        end
+    end 
+end
+
 World_node = {}
 World_node.__index = World_node
 

@@ -1,7 +1,6 @@
 EV_FUNC = 1
 EV_METHOD = 2
 EV_NEW_OBJECT = 3
-
 local handlers = {}
 
 handlers[EV_FUNC] = function(ev) ev.f() end
