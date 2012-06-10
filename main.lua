@@ -33,7 +33,6 @@ function love.load()
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
-    for i=1,10 do
     for i = 1, 50 do
         g.events:add_event({f = function() add_message("kebab" .. i) end, type = EV_FUNC}, i/2)
     end
@@ -50,6 +49,7 @@ function love.load()
 
     init_gui()
 end
+
 
 function love.draw()
     render()
@@ -101,9 +101,6 @@ function check_keys()
 end
 
 function love.mousepressed(x, y, mouse)
-
-end
-
     loveframes.mousepressed(x, y, mouse)
 end
 
