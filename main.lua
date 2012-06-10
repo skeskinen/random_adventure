@@ -1,6 +1,6 @@
 require 'hump.vector'
 
-require 'utils'
+require 'misc' 
 require 'obj_tree'
 require 'object'
 require 'events'
@@ -12,7 +12,6 @@ require 'city_generation'
 require 'images'
 require 'render'
 require 'npc'
-require 'misc' 
 require 'gui'
 
 require 'loveframes/init'

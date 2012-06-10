@@ -24,3 +24,7 @@ function round(num)
     return math.floor(num+0.5)
 end
 
+function round_vector(v)
+    return vector(round(v.x), round(v.y))
+end
+
