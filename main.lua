@@ -12,6 +12,10 @@ require 'city_generation'
 require 'images'
 require 'render'
 require 'npc'
+require 'misc' 
+require 'gui'
+
+require 'loveframes/init'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -31,6 +35,11 @@ function love.load()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
     for i=1,10 do
+    for i = 1, 50 do
+        g.events:add_event({f = function() add_message("kebab" .. i) end, type = EV_FUNC}, i/2)
+    end
+
+    for i=1,7 do
         new_random_road()
     end
     
@@ -40,10 +49,12 @@ function love.load()
     
     init_render()
 
+    init_gui()
 end
 
 function love.draw()
     render()
+    loveframes.draw()
 end
 
 function love.update(dt)
@@ -52,17 +63,20 @@ function love.update(dt)
 
     g.events:add_event{f = Object.update, o = g.player, urg = true, type = EV_METHOD}
     g.events:run_events()
+    loveframes.update(dt)
 end
 
 local speed = 400
 
-function love.keypressed(key)
+function love.keypressed(key, unicode)
     if key == 'escape' then
         love.event.quit()
     end
+    loveframes.keypressed(key, unicode)
 end
 
 function love.keyreleased(key)
+    loveframes.keyreleased(key)
 end
 
 function check_keys()
@@ -91,3 +105,9 @@ function love.mousepressed(x, y, mouse)
 
 end
 
+    loveframes.mousepressed(x, y, mouse)
+end
+
+function love.mousereleased(x, y, mouse)
+    loveframes.mousereleased(x, y, mouse)
+end
