@@ -126,6 +126,7 @@ function Event_heap:remove(handle)
         self:swap(self.values[handle].i, self.size)
         self.heap[self.size] = nil
         self.values[handle] = nil
+        self.free_indexes[#self.free_indexes+1] = handle
         self.size = self.size - 1
         self:push_down(1)
         return tmp

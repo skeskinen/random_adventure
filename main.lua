@@ -11,6 +11,10 @@ require 'city_generation'
 require 'images'
 require 'render'
 require 'npc'
+require 'misc' 
+require 'gui'
+
+require 'loveframes/init'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -29,6 +33,10 @@ function love.load()
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
+    for i = 1, 50 do
+        g.events:add_event({f = function() add_message("kebab" .. i) end, type = EV_FUNC}, i/2)
+    end
+
     for i=1,7 do
         new_random_road()
     end
@@ -38,10 +46,12 @@ function love.load()
     npc = Npc.new()
     
     init_render()
+    init_gui()
 end
 
 function love.draw()
     render()
+    loveframes.draw()
 end
 
 function love.update(dt)
@@ -50,17 +60,20 @@ function love.update(dt)
 
     g.events:add_event{f = Object.update, o = g.player, urg = true, type = EV_METHOD}
     g.events:run_events()
+    loveframes.update(dt)
 end
 
 local speed = 400
 
-function love.keypressed(key)
+function love.keypressed(key, unicode)
     if key == 'escape' then
         love.event.quit()
     end
+    loveframes.keypressed(key, unicode)
 end
 
 function love.keyreleased(key)
+    loveframes.keyreleased(key)
 end
 
 function check_keys()
@@ -86,32 +99,9 @@ function check_keys()
 end
 
 function love.mousepressed(x, y, mouse)
-
+    loveframes.mousepressed(x, y, mouse)
 end
 
-function overlap(a, b)
-    return a.pos.x < b.pos.x + b.w and b.pos.x < a.pos.x + a.w and a.pos.y < b.pos.y + b.h and b.pos.y < a.pos.y + a.h
+function love.mousereleased(x, y, mouse)
+    loveframes.mousereleased(x, y, mouse)
 end
-
-function deepcopy(object)
-    local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
-            return object
-        elseif lookup_table[object] then
-            return lookup_table[object]
-        end
-        local new_table = {}
-        lookup_table[object] = new_table
-        for index, value in pairs(object) do
-            new_table[_copy(index)] = _copy(value)
-        end
-        return setmetatable(new_table, getmetatable(object))
-    end
-    return _copy(object)
-end
-
-function round(num)
-    return math.floor(num+0.5)
-end
-
