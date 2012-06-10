@@ -61,7 +61,7 @@ function World_graph:expand(i, o)
         i = i.expansion_index
     end
     local edge = self.expansions[i]
-    local node = self:new_node(o)
+    local node, new = self:new_node(o)
     local other_edge = node:connect(edge)
     if edge.b then
         self.expansions[i] = self.expansions[#self.expansions]

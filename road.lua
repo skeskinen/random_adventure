@@ -5,47 +5,80 @@ function Road.new(name, dir, pos)
     local o = {}
     setmetatable(o, Road)
 
-    local base = Roads[name]
+    local base = road_bases[name]
 
     o.name = base.name
     o.dir = dir:clone()
     o.expansion_points = deepcopy(base.expansion_points)
     for _,v in ipairs(o.expansion_points) do
         v.pos:rotate_inplace(dir:rad())
+        v.pos = round_vector(v.pos)
         v.pos = v.pos + pos
         for i,w in ipairs(v.dirs) do
             v.dirs[i] = w + dir
         end
-        v.pos.x = round(v.pos.x)
-        v.pos.y = round(v.pos.y)
     end
     o.objects = deepcopy(base.objects)
     for _,v in ipairs(o.objects) do
         v.pos:rotate_inplace(dir:rad())
+        v.pos = round_vector(v.pos)
         v.pos = v.pos + pos
-        v.pos.x = round(v.pos.x)
-        v.pos.y = round(v.pos.y)
         v.pos = v.pos - vector(v.w/2, v.h/2)
-        v.rot = dir:clone()
+        v.rot = v.rot + dir
     end
-    o.importance = base.importance
     
     return o
 end
 
-Roads = {}
-function roads(o)
-    local new_road = {}
-    Roads[o.name] = new_road
+road_bases = {}
+function road_base(o)
+    local new_r = {}
+    road_bases[o.name] = new_r
+    new_r.dir = Direction.new(o.dir)
+    new_r.expansion_points = {}
+    new_r.objects = {}
 
-    new_road.name = o.name
-    new_road.dir = Direction.new(o.dir)
-    new_road.expansion_points = {}
-    parse_expansion_points(new_road.dir, new_road.expansion_points, o.expansion_points)
-    new_road.objects = {}
-    parse_objects(new_road.objects, o.objects)
-    new_road.importance = o.importance
+    for _,v in ipairs(o.pieces) do
+        local piece = road_pieces[v[1]]
+        local dir = Direction.new(v[2])
+        for i,w in ipairs(piece.expansion_points) do
+            local point = deepcopy(w)
+            if i == 1 then
+                point.piece_first = true
+            end
+            new_r.expansion_points[#new_r.expansion_points+1] = point
+            point.pos:rotate_inplace((dir-piece.dir):rad())
+            local pos = round_vector(point.pos) + vector(v[3],v[4])
+            point.pos = pos
+            for i,z in ipairs(point.dirs) do
+                point.dirs[i] = Direction.new(z+dir)
+            end
+        end
+        for _,w in ipairs(piece.objects) do
+            local object = deepcopy(w)
+            new_r.objects[#new_r.objects+1] = object
+            object.pos:rotate_inplace((dir-piece.dir):rad())
+            local pos = round_vector(object.pos) + vector(v[3],v[4])
+            object.pos = pos
+            object.rot = dir
+        end
+    end
 end
+
+road_pieces = {}
+function road_piece(o)
+    local new_rp = {}
+    road_pieces[o.name] = new_rp
+
+    new_rp.name = o.name
+    new_rp.dir = Direction.new(o.dir)
+    new_rp.expansion_points = {}
+    parse_expansion_points(new_rp.dir, new_rp.expansion_points, o.expansion_points)
+    new_rp.objects = {}
+    parse_objects(new_rp.objects, o.objects)
+end
+
+
 
 function parse_expansion_points(dir, t_target, t_arg)
     t_target[1] = {main = true, pos = vector(0,0), dirs = {dir:opposite(), dir}}
@@ -71,13 +104,37 @@ function parse_objects(t_target, t_arg)
     end
 end
 
-roads{
-    name = 'basic',
+road_piece{
+    name = 'crossroads',
     dir = DIR_UP,
     expansion_points = {
-        {true, 0, -96, {DIR_DOWN,DIR_UP, DIR_LEFT, DIR_RIGHT}}, {false, -32, -96, {DIR_RIGHT,DIR_LEFT}}, {false, 32, -96, {DIR_LEFT,DIR_RIGHT}}, 
-        {true, 0, -192, {DIR_DOWN,DIR_UP}}
+        {true, 0, -32, {DIR_DOWN,DIR_UP, DIR_LEFT, DIR_RIGHT}}, 
+        {false, -32, -32, {DIR_RIGHT,DIR_LEFT}}, 
+        {false, 32, -32, {DIR_LEFT,DIR_RIGHT}}, 
+        {true, 0, -64, {DIR_DOWN,DIR_UP}}
     },
-    objects = {{'straight',0, -32, 64, 64},{'crossroad', 0, -96, 64, 64}, {'straight', 0, -160, 64, 64}},
-    importance = 2
+    objects = {{'crossroads', 0, -32, 64, 64}}
 }
+
+road_piece{
+    name = 'straight',
+    dir = DIR_UP,
+    expansion_points = {
+        {true, 0, -64, {DIR_DOWN,DIR_UP}}
+    },
+    objects = {{'straight', 0, -32, 64, 64}}
+}
+
+road_base{
+    name = 'basic',
+    dir = DIR_UP,
+    pieces = {
+        {'straight', DIR_UP, 0,0},
+        {'crossroads', DIR_UP, 0,-64},
+        {'straight', DIR_UP, 0, -128},
+        {'straight', DIR_LEFT, -32, -96},
+        {'straight', DIR_RIGHT, 32, -96}
+    }
+}
+
+

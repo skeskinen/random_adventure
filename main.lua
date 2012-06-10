@@ -1,5 +1,6 @@
 require 'hump.vector'
 
+require 'utils'
 require 'obj_tree'
 require 'object'
 require 'events'
@@ -29,7 +30,7 @@ function love.load()
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
-    for i=1,7 do
+    for i=1,10 do
         new_random_road()
     end
     
@@ -38,6 +39,7 @@ function love.load()
     npc = Npc.new()
     
     init_render()
+
 end
 
 function love.draw()
@@ -87,31 +89,5 @@ end
 
 function love.mousepressed(x, y, mouse)
 
-end
-
-function overlap(a, b)
-    return a.pos.x < b.pos.x + b.w and b.pos.x < a.pos.x + a.w and a.pos.y < b.pos.y + b.h and b.pos.y < a.pos.y + a.h
-end
-
-function deepcopy(object)
-    local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
-            return object
-        elseif lookup_table[object] then
-            return lookup_table[object]
-        end
-        local new_table = {}
-        lookup_table[object] = new_table
-        for index, value in pairs(object) do
-            new_table[_copy(index)] = _copy(value)
-        end
-        return setmetatable(new_table, getmetatable(object))
-    end
-    return _copy(object)
-end
-
-function round(num)
-    return math.floor(num+0.5)
 end
 

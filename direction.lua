@@ -77,6 +77,10 @@ function Direction.__add(a,b)
     return Direction.new(a.r+b.r-1)
 end
 
+function Direction.__sub(a,b)
+    return Direction.new(a.r-b.r+1)
+end
+
 function Direction:clone()
     return Direction.new(self.r)
 end
