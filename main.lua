@@ -37,7 +37,7 @@ function love.load()
         g.events:add_event({f = function() add_message("kebab" .. i) end, type = EV_FUNC}, i/2)
     end
 
-    for i=1,7 do
+    for i=1,2 do
         new_random_road()
     end
     
@@ -48,6 +48,10 @@ function love.load()
     init_render()
 
     init_gui()
+
+    for i,v in ipairs(g.world_graph.expansions) do
+        print(i, v.a.pos)
+    end
 end
 
 
