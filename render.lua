@@ -26,6 +26,15 @@ function render_buckets()
     end
 end
 
+function get_camera()
+    local screen_size = vector(love.graphics.getWidth(),love.graphics.getHeight())
+    return {
+          pos = g.player.pos + 0.5*vector(g.player.w, g.player.h) - 0.5*screen_size
+        , w = screen_size.x
+        , h = screen_size.y
+    }
+end
+
 function render()
     love.graphics.push()
     if pixel_effect then
@@ -34,12 +43,7 @@ function render()
         love.graphics.setCanvas(canvas)
     end
 
-    local screen_size = vector(love.graphics.getWidth(),love.graphics.getHeight())
-    local screen = {
-          pos = g.player.pos + 0.5*vector(g.player.w, g.player.h) - 0.5*screen_size
-        , w = screen_size.x
-        , h = screen_size.y
-    }
+    local screen = get_camera()
 
     love.graphics.translate((-screen.pos):unpack())
 

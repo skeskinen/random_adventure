@@ -116,6 +116,10 @@ function panel:mousepressed(x, y, button)
 		end
 		
 	end
+
+    if self.MousePressed and hover then
+        self.MousePressed(x, y, button)
+    end
 	
 	for k, v in ipairs(children) do
 		v:mousepressed(x, y, button)

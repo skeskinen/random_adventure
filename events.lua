@@ -57,7 +57,8 @@ function Events:add_event(ev, delay)
 end
 
 function Events:interrupt_event(handle)
-    self.event_heap:remove(handle)
+    local v = self.event_heap:remove(handle)
+    return v, v.timer
 end
 
 Event_heap = {}

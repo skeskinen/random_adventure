@@ -75,15 +75,29 @@ function World_graph:expand(i, o)
     return node
 end
 
-function World_graph:random_adjecent(vec)
+function World_graph:random_adjacent(vec, last)
     local current_node = self.nodes[vec.x][vec.y]
+    local last_node
+    if last then last_node = self.nodes[last.x][last.y] end
+
+    local all_last = true
+    for _, edge in ipairs(current_node.edges) do
+        if (edge.a and edge.a ~= last_node and edge.a ~= current_node) or 
+            (edge.b and edge.b ~= last_node and edge.b ~= current_node) then
+            all_last = false
+        end
+    end
+    if all_last then
+        return nil
+    end
+
     local next_node = nil
     while not next_node do
         local edge = current_node.edges[math.random(#current_node.edges)]
-        if edge.a ~= current_node then
+        if edge.a ~= current_node and edge.a ~= last_node then
             return edge.a.pos
         end
-        if edge.b and edge.b ~= current_node then
+        if edge.b and edge.b ~= current_node and edge.b ~= last_node then
             return edge.b.pos
         end
     end 

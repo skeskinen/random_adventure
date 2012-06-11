@@ -19,6 +19,8 @@ require 'loveframes/init'
 WORLD_SIZE = 2^20
 game_time = 0
 
+disable_moving = false
+
 function love.load()
     math.randomseed(os.time())
     math.random()
@@ -33,9 +35,6 @@ function love.load()
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
-    for i = 1, 50 do
-        g.events:add_event({f = function() add_message("kebab" .. i) end, type = EV_FUNC}, i/2)
-    end
 
     for i=1,7 do
         new_random_road()
@@ -46,10 +45,10 @@ function love.load()
     npc = Npc.new()
     
     init_render()
+    gui.init()
 
-    init_gui()
+    gui.add_message("Hello, welcome to super cool random adventure!")
 end
-
 
 function love.draw()
     render()
@@ -79,6 +78,8 @@ function love.keyreleased(key)
 end
 
 function check_keys()
+    if disable_moving then return end
+
     local vel = vector()
     if love.keyboard.isDown("up") then
         vel = vel + vector(0, -1)
@@ -97,6 +98,41 @@ function check_keys()
     if vel.x ~= 0 or vel.y ~= 0 then
         g.player.vel:normalize_inplace()
         g.player.vel = speed * g.player.vel
+    end
+end
+
+-- after gui has taken its mouse clicks
+function mousepressed(x, y, mouse)
+    if disable_moving then return end
+    if mouse == "l" then
+        local camera = get_camera()
+        local m = {pos = vector(x, y) + camera.pos, w = 1, h = 1}
+        local choose
+        g.obj_tree:query(m, function(obj) if obj.selectable then choose = obj return true end end)
+        if choose then
+            click(choose)
+        end
+    end
+end
+
+function click(obj)
+    gui.add_message("Hello, I'm Bob!") 
+    g.player.vel = vector()
+    obj.parent:interrupt()
+    gui.answer_buttons{"Hello!", "Fuck off!"}
+    disable_moving = true
+    interrupted_obj = obj.parent
+end
+
+function get_answer(i)
+    disable_moving = false
+    interrupted_obj:continue()
+    interrupted_obj = nil
+
+    if i == 1 then
+        gui.add_message("Good luck adventuring!")
+    else 
+        gui.add_message("Fuck you too.")
     end
 end
 
