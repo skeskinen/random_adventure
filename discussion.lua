@@ -67,7 +67,7 @@ local function check_shovel(obj)
     return not (not obj.shovel)
 end
 
-local bob_s4 = lift(function(obj) obj.shovel = false end, make { text = "There you go."})
+local bob_s4 = lift(function(obj) obj.shovel = false g.inventory:add_item("shovel") end, make { text = "There you go."})
 
 local bob_s3 = make {
       text = "No, I don't because you took it. *sadface*"

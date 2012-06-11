@@ -15,6 +15,7 @@ require 'render'
 require 'npc'
 require 'gui'
 require 'discussion'
+require 'inventory'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -35,6 +36,7 @@ function love.load()
     g.player = new_player()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
+    g.inventory = Inventory.new_main()
 
     for i=1,2 do
         new_random_road()
@@ -48,6 +50,9 @@ function love.load()
     gui.init()
 
     gui.add_message("Hello, welcome to super cool random adventure!")
+
+    g.inventory:add_item("compass")
+    gui.make_inventory_frame()
 
     for i,v in ipairs(g.world_graph.expansions) do
         print(i, v.a.pos)

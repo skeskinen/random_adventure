@@ -36,6 +36,7 @@ function get_camera()
 end
 
 function render()
+    love.graphics.setColor(255, 255, 255)
     love.graphics.push()
     if pixel_effect then
         love.graphics.setPixelEffect()
