@@ -11,10 +11,11 @@ end
 Npc = {}
 Npc.__index = Npc
 
-function Npc.new(o)
+function Npc.new(name, o)
     o = o or {}
     setmetatable(o, Npc)
 
+    o.name = name
     o.travel_speed = 200
     o.location = o.location or vector(0,0)
     o.wakeup = g.events:add_event({f = Npc.wakeup, o = o, type = EV_METHOD, urg = false})

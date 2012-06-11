@@ -31,30 +31,28 @@ end
 
 local function answer_done(button)
     local i = button.button_num
-    get_answer(i)
+    local callback = button.callback
     answerlist:Remove() 
+    callback(i)
 end
 
-function gui.answer_buttons(choices)
+function gui.answer_buttons(choices, callback)
     local w = love.graphics.getWidth()
     local h = love.graphics.getHeight()
 
     answerlist = loveframes.Create("list")
     answerlist:SetPos(50, 200)
-    answerlist:SetSize(w-200, 100)
+    answerlist:SetSize(w-200, 200)
     answerlist:SetDisplayType("vertical")    
     answerlist:SetPadding(5)
     answerlist:SetSpacing(5)
 
     for i, v in ipairs(choices) do
         local b = loveframes.Create("button")
-        b:SetText(v)
-        b.button_num = i
+        b:SetText(v[1])
+        b.button_num = v[2]
+        b.callback = callback
         b.OnClick = answer_done
         answerlist:AddItem(b)
     end
-end
-
-function gui.answer_done()
-
 end

@@ -1,4 +1,5 @@
 require 'hump.vector'
+require 'loveframes/init'
 
 require 'misc' 
 require 'obj_tree'
@@ -13,8 +14,7 @@ require 'images'
 require 'render'
 require 'npc'
 require 'gui'
-
-require 'loveframes/init'
+require 'discussion'
 
 WORLD_SIZE = 2^20
 game_time = 0
@@ -42,7 +42,7 @@ function love.load()
     
     love.graphics.setBackgroundColor(50,200,50)
 
-    npc = Npc.new()
+    npc = Npc.new("Bob", {shovel = true})
     
     init_render()
     gui.init()
@@ -120,24 +120,20 @@ function mousepressed(x, y, mouse)
 end
 
 function click(obj)
-    gui.add_message("Hello, I'm Bob!") 
-    g.player.vel = vector()
-    obj.parent:interrupt()
-    gui.answer_buttons{"Hello!", "Fuck off!"}
-    disable_moving = true
-    interrupted_obj = obj.parent
+    discussion.start(obj.parent)
 end
 
-function get_answer(i)
+function pause_player(obj)
+    g.player.vel = vector()
+    obj:interrupt()
+    disable_moving = true
+    interrupted_obj = obj
+end
+
+function resume_player()
     disable_moving = false
     interrupted_obj:continue()
     interrupted_obj = nil
-
-    if i == 1 then
-        gui.add_message("Good luck adventuring!")
-    else 
-        gui.add_message("Fuck you too.")
-    end
 end
 
 function love.mousepressed(x, y, mouse)
