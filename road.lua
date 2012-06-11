@@ -51,16 +51,17 @@ function road_base(o)
             local pos = round_vector(point.pos) + vector(v[3],v[4])
             point.pos = pos
             for i,z in ipairs(point.dirs) do
-                point.dirs[i] = Direction.new(z+dir)
+                point.dirs[i] = Direction.new(z+(dir-piece.dir))
             end
         end
         for _,w in ipairs(piece.objects) do
             local object = deepcopy(w)
             new_r.objects[#new_r.objects+1] = object
+            print(piece.name, dir-piece.dir)
             object.pos:rotate_inplace((dir-piece.dir):rad())
             local pos = round_vector(object.pos) + vector(v[3],v[4])
             object.pos = pos
-            object.rot = dir
+            object.rot = dir-piece.dir
         end
     end
 end
@@ -125,15 +126,55 @@ road_piece{
     objects = {{'straight', 0, -32, 64, 64}}
 }
 
+road_piece{
+    name = 'turn',
+    dir = DIR_UP,
+    expansion_points = {
+        {true, 0, -32, {DIR_DOWN,DIR_RIGHT}},
+        {true, 32, -32, {DIR_LEFT, DIR_RIGHT}}
+    },
+    objects = {{'turn', 0, -32, 64, 64}}
+}
+
+road_piece{
+    name = 'straight_to_diagonal',
+    dir = DIR_UP,
+    expansion_points = {
+        {true, 0, -32, {DIR_DOWN,DIR_UP_RIGHT}},
+        {true, 32, -64, {DIR_DOWN_LEFT, DIR_UP_RIGHT}}
+    },
+    objects = {{'straight_to_diagonal', 0, -64, 128,128}}
+}
+
+road_piece{
+    name = 'diagonal',
+    dir = DIR_UP_RIGHT,
+    expansion_points = {
+        {true, 64, -64, {DIR_DOWN_LEFT, DIR_UP_RIGHT}}
+    },
+    objects = {{'diagonal',32,-32,128,128}}
+}
+
+road_piece{
+    name = 'diagonal_to_straight',
+    dir = DIR_UP_RIGHT,
+    expansion_points = {
+        {true, 32, -32, {DIR_DOWN_LEFT, DIR_RIGHT}},
+        {true, 64, -32, {DIR_LEFT, DIR_RIGHT}}
+    },
+    objects = {{'diagonal_to_straight',32,-32,128,128}}
+}
+
 road_base{
     name = 'basic',
     dir = DIR_UP,
     pieces = {
-        {'straight', DIR_UP, 0,0},
-        {'crossroads', DIR_UP, 0,-64},
-        {'straight', DIR_UP, 0, -128},
-        {'straight', DIR_LEFT, -32, -96},
-        {'straight', DIR_RIGHT, 32, -96}
+        {'turn', DIR_UP,0,0},
+        {'straight_to_diagonal', DIR_RIGHT, 32,-32},
+        {'diagonal', DIR_DOWN_RIGHT, 96, 0},
+        {'diagonal_to_straight', DIR_DOWN_RIGHT, 160, 64},
+        {'straight', DIR_DOWN, 192, 128},
+        {'crossroads', DIR_DOWN, 192, 192}
     }
 }
 

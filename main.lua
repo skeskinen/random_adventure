@@ -36,7 +36,7 @@ function love.load()
     g.events:add_event{o = g.player, type = EV_NEW_OBJECT, urg = true}
 
 
-    for i=1,7 do
+    for i=1,2 do
         new_random_road()
     end
     
@@ -48,6 +48,10 @@ function love.load()
     gui.init()
 
     gui.add_message("Hello, welcome to super cool random adventure!")
+
+    for i,v in ipairs(g.world_graph.expansions) do
+        print(i, v.a.pos)
+    end
 end
 
 function love.draw()
