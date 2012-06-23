@@ -43,17 +43,17 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 
 	float ballSize[3];
 	ballSize[0] = 0.05;
-	ballSize[1] = 0.02;
-	ballSize[2] = 0.015;
+	ballSize[1] = 0.06;
+	ballSize[2] = 0.04;
 
 	float fov = M_PI/6;
 	vec3 dir = vec3(asin(texture_coords.x * fov), asin(texture_coords.y * fov), -1.0);
 	dir = normalize(dir);
 
-	vec3 pos = vec3(0.0, 0.0, 0.0);
+	vec3 pos = vec3(0.0, 0.0, 0.3);
 
 	vec3 normal = vec3(0.0, 0.0, 1.0);
-	vec3 position = vec3(texture_coords, -1.0);
+	vec3 position = vec3(texture_coords, -0.5);
 	vec4 diffuseColor = oColor;
 
 	float minDistance = 2.0;
@@ -82,13 +82,74 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 					diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
 				else
 					diffuseColor = vec4((vec3(1.0)+normal)*vec3(0.8, 0.7, 0.4), 1.0);
+
+				vec2 coord = normal.xy;
+				float uScale = 0.1;
+
+				for (int i = 0; i < 5; i++)
+				{
+					uScale += weight[i] / pow(length(centers[i] - coord), 2);
+				}
+				if (uScale > 10.0)
+				{
+					diffuseColor = vec4(1.0);
+				}
+				else if (uScale > 1.0)
+				{
+					diffuseColor.r = (1.0/9.0)*(uScale-1.0);
+				}
+				else if (uScale > 0.9)
+				{
+					float s = smoothstep(0.9, 1.0, uScale);
+
+					diffuseColor = vec4(1.0) * s + (1.0 - s) * vec4(0.7, 0.0, 0.0, 1.0);
+				}
+				else if (uScale > 0.8)
+				{
+					diffuseColor = vec4(0.7, 0.0, 0.0, 1.0);
+					diffuseColor.a = smoothstep(1.0, 1.1, uScale);
+				}
+
+				for (int i = 0; i < 5; i++)
+				{
+					vec2 dir = centers[i] - coord;
+
+					float len = length(dir);
+					float angle = atan(dir.x, dir.y);
+
+					float radius = sqrt(weight[i]/10.0);
+					float eyes[2];
+					eyes[0] = M_PI/2-0.4 + M_PI;
+					eyes[1] = M_PI/2+0.4 + M_PI;
+
+					if (len < 0.8 * radius && len > 0.7 * radius)
+					{
+						if (angle > -M_PI/2 && angle < M_PI/2)
+						{
+							diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
+						}
+					}
+					for(int j = 0; j < 2; j++) 
+					{
+						vec2 eye = radius * 0.65 * vec2(cos(eyes[j]), sin(eyes[j]));
+						if(length(eye-dir) < radius * 0.25) {
+							diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+							float angle = t+i*j+j*10;
+							vec2 pupil = radius * 0.1 * vec2(cos(angle), sin(angle));
+							if(length(pupil+eye-dir) < radius * 0.1) {
+								diffuseColor = vec4(1.0);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
 
 	vec3 lights[3];
-	lights[0] = vec3(-1.0, -1.0, 0.0);
-	lights[1] = vec3(0.0, 1.0, 0.0);
+	lights[0] = vec3(-0.5, -0.5, 0.5);
+	lights[1] = vec3(0.0, 0.5, 0.4);
 	lights[2] = vec3(0.0, 0.5, 0.2);
 
 	float lightAmount = 0.4;
@@ -115,7 +176,7 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 
 		lightAmount += dot(normal, rayDir) * (light / 3);
 		vec3 r = 2*dot(normal, -rayDir)*normal + rayDir;
-		lightAmount += 0.2 * pow(max(0, dot(r, normalize(rayPos))), 2.0) * light;
+//		lightAmount += 0.2 * pow(max(0, dot(r, normalize(rayPos))), 2.0) * light;
 	}
 
 	oColor = lightAmount * diffuseColor;
