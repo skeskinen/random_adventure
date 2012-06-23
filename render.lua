@@ -42,6 +42,9 @@ function render()
         love.graphics.setPixelEffect()
         canvas:clear()
         love.graphics.setCanvas(canvas)
+        love.graphics.setColor(50, 200, 50)
+		love.graphics.rectangle("fill", 0, 0, 1000, 1000);
+    	love.graphics.setColor(255, 255, 255)
     end
 
     local screen = get_camera()

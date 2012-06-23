@@ -35,7 +35,92 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
     vec4 oColor = Texel(texture, texture_coords);
     texture_coords -= vec2(0.5, 0.5);
     texture_coords *= 2;
-	
+
+	vec3 balls[3];
+	balls[0] = vec3(sin(0.7*t-23.3), cos(t+0.5), -0.7*0.5*(sin(t+2.989) + 1.0) - 0.2);
+	balls[1] = vec3(sin(0.3*t+2.23), cos(t+2.5), -0.7*0.5*(sin(t+2.34) + 1.0) - 0.2);
+	balls[2] = vec3(sin(0.8*t+2.023), cos(t+0.256), -0.7*0.5*(sin(t+2.032) + 1.0) - 0.2);
+
+	float ballSize[3];
+	ballSize[0] = 0.1;
+	ballSize[1] = 0.2;
+	ballSize[2] = 0.3;
+
+	float fov = M_PI/6;
+	//vec3 dir = vec3(asin(texture_coords.x * fov), asin(texture_coords.y * fov), -1.0);
+	vec3 dir = vec3(0, 0, -1.0);
+	dir = normalize(dir);
+
+	vec3 pos = vec3(texture_coords, 0.0);
+
+	vec3 normal = vec3(0.0, 0.0, 1.0);
+	vec3 position = vec3(texture_coords, -1.0);
+	vec4 diffuseColor = oColor;
+
+	float minDistance = 1.0;
+
+	for (int i = 0; i < 3; i++)
+	{
+		vec3 ballPos = balls[i] - pos;
+
+		float a = dot(ballPos, dir);
+
+		vec3 v = a * dir - ballPos;
+
+		if (a > 0 && length(v) < ballSize[i])
+		{
+			float b = -sqrt(pow(ballSize[i], 2) - pow(length(v), 2));
+
+			if (a+b < minDistance)
+			{
+				minDistance = a+b;
+				position = (a + b) * dir;
+				normal = (position - ballPos)/ballSize[i];
+				position += pos;
+				if ((abs(normal.x) > 0.3 && abs(normal.x) < 0.4) ||
+					(abs(normal.y) > 0.3 && abs(normal.y) < 0.4) ||
+					(abs(normal.z) > 0.3 && abs(normal.z) < 0.4))
+					diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
+				else
+					diffuseColor = vec4((vec3(1.0)+normal)*vec3(0.8, 0.7, 0.4), 1.0);
+			}
+		}
+	}
+
+	vec3 lights[3];
+	lights[0] = vec3(-1.0, -1.0, 0.0);
+	lights[1] = vec3(0.0, 1.0, 0.0);
+	lights[2] = vec3(0.0, 0.5, 0.2);
+
+	float lightAmount = 0.4;
+
+	for (int j = 0; j < 3; j++)
+	{
+		vec3 rayDir = normalize(lights[j] - position);
+		vec3 rayPos = position;
+
+		float light = 1.0;
+		for (int i = 0; i < 3; i++)
+		{
+			vec3 ballPos = balls[i] - rayPos;
+
+			float a = dot(ballPos, rayDir);
+
+			vec3 v = a * rayDir - ballPos;
+
+			if (a > 0 && length(v) < ballSize[i])
+			{
+				light = 0.0;
+			}
+		}
+
+		lightAmount += dot(normal, rayDir) * (light / 3);
+		vec3 r = 2*dot(normal, -rayDir)*normal + rayDir;
+		lightAmount += 0.2 * pow(max(0, dot(r, normalize(rayPos))), 2.0) * light;
+	}
+
+	oColor = lightAmount * diffuseColor;
+
 	if (scale > 10.0)
 	{
 		oColor = vec4(1.0);
