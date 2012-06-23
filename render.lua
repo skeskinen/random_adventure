@@ -1,7 +1,7 @@
 local pixel_effect
 local canvas
 
-local run_shader = false
+local run_shader = true
 
 local renderlist = {}
 local buckets = 5
@@ -55,10 +55,11 @@ function render()
     love.graphics.pop()
 
     if pixel_effect then
---        pixel_effect:send("t", game_time)
+		pixel_effect:send("t", game_time)
         love.graphics.setCanvas()
         love.graphics.setPixelEffect(pixel_effect)
         love.graphics.draw(canvas)
+        love.graphics.setPixelEffect()
     end
 end
 

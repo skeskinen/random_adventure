@@ -1,4 +1,5 @@
 extern number t;
+#define M_PI 3.14
 vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
     texture_coords -= vec2(0.5, 0.5);
@@ -7,7 +8,87 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 
 //    texture_coords /= (1+min(t,0));
 
+
+	vec2 centers[5];
+	centers[0] = vec2(sin(t-123.0), cos(t-23.3));
+	centers[1] = vec2(sin(t-23.0), cos(t-2.0));
+	centers[2] = vec2(sin(t-334.9), cos(t-0.23));
+	centers[3] = vec2(sin(t-0.2), cos(t-0.932));
+	centers[4] = vec2(sin(t-193), cos(t-13.3));
+
+	float weight[5];
+	weight[0] = 0.12;
+	weight[1] = 0.015;
+	weight[2] = 0.02;
+	weight[3] = 0.109;
+	weight[4] = 0.098;
+
+	float scale = 0.1;
+
+	for (int i = 0; i < 5; i++)
+	{
+		scale += weight[i] / pow(length(centers[i] - texture_coords), 2);
+	}
+
     texture_coords /= 2;
     texture_coords += vec2(0.5, 0.5);
-    return Texel(texture, texture_coords);
+    vec4 oColor = Texel(texture, texture_coords);
+    texture_coords -= vec2(0.5, 0.5);
+    texture_coords *= 2;
+	
+	if (scale > 10.0)
+	{
+		oColor = vec4(1.0);
+	}
+	else if (scale > 1.0)
+	{
+		oColor.r = (1.0/9.0)*(scale-1.0);
+	}
+	else if (scale > 0.9)
+	{
+		float s = smoothstep(0.9, 1.0, scale);
+
+		oColor = vec4(1.0) * s + (1.0 - s) * vec4(0.7, 0.0, 0.0, 1.0);
+	}
+	else if (scale > 0.8)
+	{
+		oColor = vec4(0.7, 0.0, 0.0, 1.0);
+		oColor.a = smoothstep(1.0, 1.1, scale);
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		vec2 dir = centers[i] - texture_coords;
+
+		float len = length(dir);
+		float angle = atan(dir.x, dir.y);
+
+		float radius = sqrt(weight[i]/10.0);
+		float eyes[2];
+		eyes[0] = M_PI/2-0.4 + M_PI;
+		eyes[1] = M_PI/2+0.4 + M_PI;
+
+		if (len < 0.8 * radius && len > 0.7 * radius)
+		{
+			if (angle > -M_PI/2 && angle < M_PI/2)
+			{
+				oColor = vec4(0.0, 0.0, 0.0, 1.0);
+			}
+		}
+		for(int j = 0; j < 2; j++) 
+		{
+			vec2 eye = radius * 0.65 * vec2(cos(eyes[j]), sin(eyes[j]));
+			if(length(eye-dir) < radius * 0.25) {
+				oColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+				float angle = t+i*j+j*10;
+				vec2 pupil = radius * 0.1 * vec2(cos(angle), sin(angle));
+				if(length(pupil+eye-dir) < radius * 0.1) {
+					oColor = vec4(1.0);
+				}
+			}
+		}
+	}
+
+	return oColor;
 }
